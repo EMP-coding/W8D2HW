@@ -1,0 +1,55 @@
+{
+    "cells": [
+        {
+            "language": "markdown",
+            "source": [
+                ""
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "\r\n\r\n## Homework"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "Design a flexible OOP system to describe characters in a RPG game\r\n\r\nThere are 4 Unique Characters which use Different Types of Attacking mechanisms and Defending mechanisms.\r\n\r\n- Orges - fights with club and defends with shield\r\n- Peons - fights with club and defends with shield\r\n- Knights - fights with a Sword and defends with Armor\r\n- Archer - fights with Bow and Arrow and has only is tunic to protect them\r\n\r\n- All Characters can collect gold and this will always be the same for every new type of character\r\n\r\nAt the end of this each character should be able to attack and defend and collect gold. If needed any character should be able to change his fighting style, say if a knight losing his sword, but finds a club he should be able to change his fighting mechanism to use the club\r\n\r\n<b>Hint: </b> To complete this assignment you will need multiple classes and interfaces and an Abstract class\r\n\r\nYou can use our [Final Rubber Ducky Walkthrough](#rubber) example as a guide "
+            ],
+            "outputs": []
+        },
+        {
+            "language": "typescript",
+            "source": [
+                "//base class \r\nabstract class Character {\r\n    protected name: string;\r\n    protected gold: number = 0;\r\n\r\n    constructor(name: string) {\r\n        this.name = name\r\n    }\r\n    //shouldn't be defined here character specific \r\n    abstract attack(): string;\r\n    abstract defend(): string;\r\n\r\n    collectGold(amount: number): void {\r\n        this.gold += amount;\r\n        console.log(`${this.name} collected ${amount} of gold. Total Gold: ${this.gold}`)\r\n    }\r\n}\r\n// Want to be able to differentiate between melee and ranged. Will use interface to implement into class\r\n\r\n//Weapons\r\ninterface IWeapon {\r\n    description(): string;\r\n    attack(): string;\r\n}\r\n\r\ninterface IMeleeWeapon extends IWeapon {\r\n    meleeAttack(): string;\r\n}\r\n\r\ninterface IRangedAttack extends IWeapon {\r\n    rangedAttack(): string;\r\n}\r\n\r\nclass Club implements IMeleeWeapon {\r\n    description(): string {\r\n        return \"a thick wooden club\"\r\n    }\r\n    attack(): string {\r\n        return this.meleeAttack()\r\n    }\r\n    meleeAttack(): string {\r\n        return \"swings the club fiercely\";\r\n    }\r\n};\r\n\r\nclass Bow implements IRangedAttack {\r\n    description(): string { \r\n        return \"bow constructed out of durable dwarven steel\"\r\n    }\r\n\r\n    attack(): string {\r\n        return this.rangedAttack()\r\n    }\r\n    rangedAttack(): string {\r\n        return \"pulls back, holds steady, and.....shoots\"\r\n    }\r\n};\r\n\r\nclass Sword implements IMeleeWeapon {\r\n    description(): string {\r\n        return \"a large broadsword made out of the finest steel known to man\"\r\n    }\r\n    attack(): string {\r\n        return this.meleeAttack()\r\n    }\r\n    meleeAttack(): string {\r\n        return \"slashes forwards violently\"\r\n    }\r\n}\r\n\r\n\r\n// Defense \r\ninterface IDefence {\r\n    defend(): string;\r\n};\r\n\r\nclass Shield implements IDefence {\r\n    defend(): string {\r\n        return \"uses a sturdy shield to block the attack\";\r\n    }\r\n};\r\n\r\nclass Armor implements IDefence {\r\n    defend(): string {\r\n        return \" is wearing full body armor reducing the damage\";\r\n    }\r\n};\r\n\r\nclass Tunic implements IDefence {\r\n    defend(): string {\r\n        return \"performs a quick roll dodging the attack\";\r\n    }\r\n}\r\n\r\nclass Ogre extends Character {\r\n    private weapon: IMeleeWeapon;\r\n    private defense: IDefence;\r\n\r\n    constructor(name: string) {\r\n        super(name);\r\n        this.weapon = new Club();  \r\n        this.defense = new Shield();  \r\n    }\r\n\r\n    attack(): string {\r\n        return `${this.name} ${this.weapon.attack()}`;\r\n    }\r\n\r\n    defend(): string {\r\n        return `${this.name} ${this.defense.defend()}`;\r\n    }\r\n\r\n    changeWeapon(weapon: IMeleeWeapon): void {\r\n        this.weapon = weapon;\r\n        console.log(`${this.name} has changed weapons and now has a ${weapon.description()}`);\r\n    }\r\n};\r\n\r\n//Peon a subclass or ogre like in WoW. Also does same thing as Ogre so it makes sense to extend \r\n\r\nclass Peon extends Ogre {\r\n    constructor(name: string) {\r\n        super(name);\r\n    }\r\n};\r\n\r\nclass Knight extends Character {\r\n    private weapon: IMeleeWeapon;\r\n    private defense: IDefence;\r\n\r\n    constructor(name: string) {\r\n        super(name);\r\n        this.weapon = new Sword();  \r\n        this.defense = new Armor();  \r\n    }\r\n\r\n    attack(): string {\r\n        return `${this.name} ${this.weapon.attack()}`;\r\n    }\r\n\r\n    defend(): string {\r\n        return `${this.name} ${this.defense.defend()}`;\r\n    }\r\n\r\n    changeWeapon(weapon: IMeleeWeapon): void {\r\n        this.weapon = weapon;\r\n        console.log(`${this.name} has changed weapons and now has ${weapon.description()}`);\r\n    }\r\n\r\n};\r\n\r\nclass Archer extends Character {\r\n    private weapon: IRangedAttack;\r\n    private defense: IDefence;\r\n\r\n    constructor(name: string) {\r\n        super(name);\r\n        this.weapon = new Bow();  \r\n        this.defense = new Tunic();  \r\n    }\r\n\r\n    attack(): string {\r\n        return `${this.name} ${this.weapon.attack()}`;\r\n    }\r\n\r\n    defend(): string {\r\n        return `${this.name} ${this.defense.defend()}`;\r\n    }\r\n};\r\n\r\n//Testing \r\n\r\nfunction testing() {\r\n    const knight = new Knight(\"Sir George\");\r\n    const ogre = new Ogre(\"Shrek\");\r\n    const archer = new Archer(\"Sylvanas\");\r\n    console.log(knight.attack());\r\n    console.log(ogre.defend());\r\n    console.log(ogre.attack());\r\n    console.log(knight.defend());\r\n    knight.changeWeapon(new Club());\r\n    console.log(knight.attack());\r\n    console.log(\"Suddenly, out of nowhere, Sylvanas appears and takes aim at Shrek\")\r\n    console.log(archer.attack())\r\n    console.log(ogre.defend())\r\n\r\n\r\n    knight.collectGold(100);\r\n    ogre.collectGold(50);\r\n};\r\n\r\ntesting();\r\n//Notbook acts wierd but if you spam click it a few times it works\r\n"
+            ],
+            "outputs": [
+                {
+                    "items": [
+                        {
+                            "mime": "application/vnd.code.notebook.stdout",
+                            "value": [
+                                "Sir George slashes forwards violently",
+                                "Shrek uses a sturdy shield to block the attack",
+                                "Shrek swings the club fiercely",
+                                "Sir George  is wearing full body armor reducing the damage",
+                                "Sir George has changed weapons and now has a thick wooden club",
+                                "Sir George swings the club fiercely",
+                                "Suddenly, out of nowhere, Sylvanas appears and takes aim at Shrek",
+                                "Sylvanas pulls back, holds steady, and.....shoots",
+                                "Shrek uses a sturdy shield to block the attack",
+                                "Sir George collected 100 of gold. Total Gold: 100",
+                                "Shrek collected 50 of gold. Total Gold: 50",
+                                "",
+                                ""
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
